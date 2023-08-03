@@ -4,7 +4,7 @@
     <div id="tooltip"></div>
 
     <el-button-group class="button-group">
-      <el-button type="" icon="" @click="groupOneChange">首页总览</el-button>
+      <el-button type="" icon="" @click="groupOneChange" :autofocus='true'>首页总览</el-button>
       <el-button type="" icon="" @click="groupTwoChange">应急管理</el-button>
       <el-button type="" icon="" @click="groupThreeChange">能源管理</el-button>
       <el-button type="" icon="" @click="groupFourChange">环境监测</el-button>
@@ -731,7 +731,7 @@
         cylinder.scale.set(1, 1, 1);
         // cylinder.position.z -= height / 2;
         // cylinder.translateY(-height);
-        cylinder._height = height;
+        cylinder._height = vector.z + height / 2;
 
         // 法向量计算位置
         // let coordVec3 = vector.normalize();
@@ -1229,13 +1229,19 @@
 
       // Tween - 城市光柱动画
       cityCylinderTween() {
+        this.cityNumMeshArr.forEach(e => {
+                  e.visible = false;
+                })
         this.cityCylinderMeshArr.forEach(mesh => {
-          // console.log(mesh);
+          console.log(mesh);
           const begin = {
-            z: mesh.position.z,
+            z: 0,
+            height:0
           };
           const end = {
-            z: mesh.position.z + mesh._height,
+            // z: mesh.position.z + mesh._height,
+            z: 1,
+            height:mesh._height
           };
           const self = this;
           this.$tween.use({
@@ -1243,7 +1249,8 @@
               end,
               time: 1000,
               onUpdate(obj) {
-                mesh.position.z = obj.z;
+                mesh.scale.y = obj.z;
+                mesh.position.z =obj.height
               },
               onComplete() {
                 // 动画结束，显示数据
@@ -1265,7 +1272,7 @@
 
         !i ? i = 0 : i = i;
         if(i > this.cameraPosArr.length - 1) {
-          // this.cityCylinderTween();
+          this.cityCylinderTween();
           return false;
         }
 
